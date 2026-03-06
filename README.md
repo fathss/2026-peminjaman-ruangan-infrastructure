@@ -1,177 +1,56 @@
 # Infrastructure Setup
 
-## PeminjamanRuangan System
+Panduan utama menjalankan sistem menggunakan Docker Compose.
 
-Repository ini berisi panduan instalasi dan konfigurasi environment untuk menjalankan sistem **Peminjaman Ruangan Kampus** secara manual.
+## Arsitektur
 
----
+- Backend: ASP.NET 10 (`faths/peminjaman-ruangan-backend:latest`)
+- Frontend: React + Vite + Nginx (`faths/peminjaman-ruangan-frontend:latest`)
+- Database: Supabase (external)
 
-# Arsitektur Sistem
+## Quick Setup Via Docker
 
-Sistem terdiri dari:
+### 1. Pastikan Docker aktif
 
-* **Backend**: ASP.NET 10
-* **Frontend**: React + TypeScript (Node.js)
-* **Database**: PostgreSQL
-
----
-
-# 🔧 Requirements
-
-Pastikan sudah menginstall:
-
-## 1. .NET 10 SDK
-
-Download:
-https://dotnet.microsoft.com/download
-
-Cek versi:
-
-```
-dotnet --version
+```powershell
+docker --version
+docker compose version
 ```
 
----
+### 2. Jalankan dari folder `infrastructure`
 
-## 2️. Node.js (LTS)
-
-Download:
-https://nodejs.org
-
-Cek versi:
-
-```
-node -v
-npm -v
+```powershell
+docker compose -f compose.yaml pull
+docker compose -f compose.yaml up -d
 ```
 
----
+### 3. Akses aplikasi
 
-## 3. PostgreSQL
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:5000`
 
-Download:
-https://www.postgresql.org/download/
+### 4. Cek status dan logs
 
-Pastikan `psql` dapat diakses:
-
-```
-psql --version
-```
-
----
-
-# Backend Configuration (ASP.NET)
-
-Masuk ke repository backend.
-
-## 1. Install Dependency
-
-```
-dotnet restore
+```powershell
+docker compose -f compose.yaml ps
+docker compose -f compose.yaml logs -f
 ```
 
-## 2. Setup appsettings.json
+### 5. Stop service
 
-Edit:
-
-```
-appsettings.json
+```powershell
+docker compose -f compose.yaml down
 ```
 
-Tambahkan connection string dan jwt:
+## Catatan
 
-```json
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=PeminjamanRuanganDB;Username=postgres;Password=PASSWORD"
-  },
+- Compose file ini tidak menjalankan PostgreSQL lokal.
+- Connection string Supabase dibaca dari `backend/PeminjamanRuangan.API/appsettings.json` di image backend.
+- Port mapping backend adalah `5000:8080`.
 
-  "Jwt": {
-    "Key": "MINIMAL_32_KARAKTER_RAHASIA",
-    "Issuer": "PeminjamanRuanganAPI",
-    "Audience": "PeminjamanRuanganApp"
-  },
-```
+## Alternatif Manual (Tanpa Docker)
 
-## 3️. Jalankan Migration
+Jika ingin menjalankan service satu per satu:
 
-```
-dotnet ef database update
-```
-
-Jika belum ada migration:
-
-```
-dotnet ef migrations add InitialCreate
-dotnet ef database update
-```
-
-## 4️. Jalankan Backend
-
-```
-dotnet run
-```
-
----
-
-# Frontend Setup (React + TypeScript)
-
-Masuk ke repository frontend.
-
-## 1️. Install dependency
-
-```
-npm install
-```
-
-## 2️. Pastikan BASE URL API
-
-Ambil Contoh dari file
-
-```
-env.example
-```
-
-Pastikan port localhost sesuai dengan localhost backend masing-masing:
-
-```ts
-VITE_API_URL=http://localhost:5001/api
-```
-
-## 3️. Jalankan Frontend
-
-```
-npm run dev
-```
-
----
-
-# CORS Configuration (Backend)
-
-Pastikan backend mengizinkan frontend:
-Di file `Program.cs`,
-```csharp
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5100")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
-});
-
-app.UseCors("AllowFrontend");
-```
-
-*Pastikan port localhost sama dengan localhost frontend masing-masing
-
----
-
-# Menjalankan Sistem Secara Lengkap
-
-1. Jalankan PostgreSQL
-2. Jalankan Backend (`dotnet run`)
-3. Jalankan Frontend (`npm run dev`)
-
----
+1. Jalankan backend dari folder `backend/PeminjamanRuangan.API` dengan `dotnet run`.
+2. Jalankan frontend dari folder `frontend/peminjaman-ruangan-web` dengan `npm run dev`.
