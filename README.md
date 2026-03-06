@@ -4,8 +4,8 @@ Panduan utama menjalankan sistem menggunakan Docker Compose.
 
 ## Arsitektur
 
-- Backend: ASP.NET 10 (`faths/peminjaman-ruangan-backend:latest`)
-- Frontend: React + Vite + Nginx (`faths/peminjaman-ruangan-frontend:latest`)
+- Backend: ASP.NET 10
+- Frontend: React + Vite + Nginx
 - Database: Supabase (external)
 
 ## Quick Setup Via Docker
@@ -52,5 +52,5 @@ docker compose -f compose.yaml down
 
 Jika ingin menjalankan service satu per satu:
 
-1. Jalankan backend dari folder `backend/PeminjamanRuangan.API` dengan `dotnet run`.
-2. Jalankan frontend dari folder `frontend/peminjaman-ruangan-web` dengan `npm run dev`.
+1. Jalankan backend dari [2026-peminjaman-ruangan-backend](https://github.com/fathss/2026-peminjaman-ruangan-backend.git) dengan `dotnet run`.
+2. Jalankan frontend dari repositori [2026-peminjaman-ruangan-frontend](https://github.com/fathss/2026-peminjaman-ruangan-frontend.git) dengan `npm run dev`.
